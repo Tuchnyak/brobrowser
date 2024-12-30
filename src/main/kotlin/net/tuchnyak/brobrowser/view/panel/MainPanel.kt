@@ -22,14 +22,14 @@ fun MainPanel.init(): JPanel {
     this.layout = BorderLayout()
 
     //// BROWSER
-    val browser = JBCefBrowser()
+    val browserInstance = JBCefBrowser()
     val browserPanel = initCustomPanel {
         it.layout = BorderLayout()
         if (JBCefApp.isSupported()) {
-            browser.loadURL(PersistentService.getLastPageInfo(project).address)
-            it.add(browser.component, BorderLayout.CENTER)
+            browserInstance.loadURL(PersistentService.getLastPageInfo(project).address)
+            it.add(browserInstance.component, BorderLayout.CENTER)
 
-            browser.jbCefClient.addLoadHandler(
+            browserInstance.jbCefClient.addLoadHandler(
                 object : CefLoadHandlerAdapter() {
                     override fun onLoadingStateChange(
                         browser: CefBrowser?,
@@ -50,7 +50,7 @@ fun MainPanel.init(): JPanel {
                             }
                     }
                 },
-                browser.cefBrowser
+                browserInstance.cefBrowser
             )
         } else {
             it.add(JLabel("JBCef browser unsupported."), BorderLayout.CENTER)
@@ -85,7 +85,7 @@ fun MainPanel.init(): JPanel {
             val selected = dropDown.selectedItem?.toString()
             if (selected != null) {
                 PersistentService.setupLastPage(selected, project)
-                browser.loadURL(PersistentService.getLastPageInfo(project).address)
+                browserInstance.loadURL(PersistentService.getLastPageInfo(project).address)
             }
         }
         dropDown.renderer = object : DefaultListCellRenderer() {
