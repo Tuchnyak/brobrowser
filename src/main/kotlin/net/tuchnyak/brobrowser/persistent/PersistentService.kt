@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
  */
 class PluginState : BaseState() {
     var urlMap by linkedMap<String, String>()
+    var lastTitle by string()
 }
 
 @Service(Service.Level.PROJECT)
@@ -25,13 +26,33 @@ class PersistentService : SimplePersistentStateComponent<PluginState>(PluginStat
     companion object {
         fun getPluginStateInstance(project: Project): PluginState = project.getService<PersistentService>(PersistentService::class.java).state
 
-        fun addUrl(url: UrlInfo, project: Project) {
-            getPluginStateInstance(project).addUrl(url.title, url.address)
+        fun addOrUpdateUrl(url: UrlInfo, project: Project) {
+            getPluginStateInstance(project).addOrUpdateUrl(url.title, url.address)
         }
 
         fun removeUrl(url: UrlInfo, project: Project) {
             getPluginStateInstance(project).removeUrl(url.title)
         }
+
+        fun setupLastPage(name: String, project: Project) {
+            getPluginStateInstance(project).lastTitle = name
+        }
+
+        fun getLastPageInfo(project: Project): UrlInfo {
+            val pluginState = getPluginStateInstance(project)
+            val address = pluginState.urlMap[pluginState.lastTitle]
+
+            return UrlInfo(pluginState.lastTitle ?: "none", address ?: ":blank")
+        }
+
+        fun getNames(project: Project): Set<String> {
+            return getPluginStateInstance(project).urlMap.keys.toSet()
+        }
+
+        fun getUrlByName(project: Project, name: String): String {
+            return getPluginStateInstance(project).urlMap[name] ?: ""
+        }
+
     }
 
 }
@@ -39,7 +60,7 @@ class PersistentService : SimplePersistentStateComponent<PluginState>(PluginStat
 class UrlInfo(val title: String, val address: String)
 
 
-private fun PluginState.addUrl(name: String, url: String) {
+private fun PluginState.addOrUpdateUrl(name: String, url: String) {
     urlMap = urlMap.copyAndPut(name, url)
 }
 
@@ -50,7 +71,7 @@ private fun PluginState.removeUrl(name: String) {
 private fun <K : Any, V : Any> MutableMap<K, V>.copyAndPut(key: K, value: V): MutableMap<K, V> {
     val tmpMap = mutableMapOf<K, V>();
     tmpMap.putAll(this)
-    tmpMap.put(key, value)
+    tmpMap[key] = value
 
     return tmpMap
 }

@@ -14,6 +14,9 @@
 
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
-<!--        TODO()-->
+        <toolWindow factoryClass="net.tuchnyak.brobrowser.view.BrowserManagerWindowFactory"
+                    id="Bro"
+                    anchor="right"
+                    icon="AllIcons.Actions.Colors" />
     </extensions>
 </idea-plugin>
