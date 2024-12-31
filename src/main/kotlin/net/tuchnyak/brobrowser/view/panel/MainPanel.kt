@@ -8,7 +8,13 @@ import com.intellij.ui.jcef.JBCefBrowser
 import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
 import org.cef.browser.CefBrowser
+import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandlerAdapter
+import org.cef.handler.CefRequestHandlerAdapter
+import org.cef.handler.CefResourceRequestHandler
+import org.cef.handler.CefResourceRequestHandlerAdapter
+import org.cef.misc.BoolRef
+import org.cef.network.CefRequest
 import java.awt.BorderLayout
 import java.awt.Component
 import javax.swing.*
@@ -48,6 +54,38 @@ fun MainPanel.init(): JPanel {
                                     project
                                 )
                             }
+                    }
+                },
+                browserInstance.cefBrowser
+            )
+
+            browserInstance.jbCefClient.addRequestHandler(
+                object : CefRequestHandlerAdapter() {
+                    override fun getResourceRequestHandler(
+                        browser: CefBrowser?,
+                        frame: CefFrame?,
+                        request: CefRequest?,
+                        isNavigation: Boolean,
+                        isDownload: Boolean,
+                        requestInitiator: String?,
+                        disableDefaultHandling: BoolRef?
+                    ): CefResourceRequestHandler? {
+                        return object : CefResourceRequestHandlerAdapter() {
+                            override fun onBeforeResourceLoad(
+                                browser: CefBrowser?,
+                                frame: CefFrame?,
+                                request: CefRequest?
+                            ): Boolean {
+                                request?.apply {
+                                    setHeaderByName(
+                                        "User-Agent",
+                                        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                                        true
+                                    )
+                                }
+                                return false
+                            }
+                        }
                     }
                 },
                 browserInstance.cefBrowser
