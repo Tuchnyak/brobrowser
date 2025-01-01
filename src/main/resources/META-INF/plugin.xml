@@ -1,22 +1,33 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>net.tuchnyak.brobrowser</id>
-    <name>Brobrowser</name>
+    <name>BroBrowser</name>
 
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="george.sh.tech+bronotes@gmail.com" url="https://www.linkedin.com/in/george-sv/">
+        George Shchennikov
+    </vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    <p>Plain sidebar browser to open web pages (with documentation for example).
+    <br>Ugly but helpful like a bro.<br></p>
+    <dl>
+        <dt><b>Features</b></dt>
+        <dd>- Add bookmarks to plugin</dd>
+        <dd>- Edit or remove bookmarks</dd>
+    </dl>
+    <p>Each bookmarks set saved locally for particular project.</p>
   ]]></description>
 
-    <change-notes><![CDATA[]]></change-notes>
-
+    <change-notes><![CDATA[
+    <ul>
+        <li><b>1.0.0</b>: First release!</li>
+    </ul>
+  ]]></change-notes>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="net.tuchnyak.brobrowser.view.BrowserManagerWindowFactory"
                     id="Bro"
                     anchor="right"
-                    icon="AllIcons.Actions.Colors" />
+                    icon="net.tuchnyak.brobrowser.icons.PluginIcons.toolWindow"/>
     </extensions>
 </idea-plugin>

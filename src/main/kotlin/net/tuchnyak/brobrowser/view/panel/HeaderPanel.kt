@@ -1,14 +1,15 @@
 package net.tuchnyak.brobrowser.view.panel
 
-import ai.grazie.detector.ngram.main
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.ui.jcef.JBCefBrowser
+import net.tuchnyak.brobrowser.icons.PluginIcons
 import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.DefaultListCellRenderer
 import javax.swing.JButton
@@ -17,7 +18,6 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
-import javax.swing.JTable
 import javax.swing.JTextField
 
 /**
@@ -68,9 +68,9 @@ private fun initButtonPanel(project: Project, mainPanel: MainPanel, dropDown: JC
     initCustomPanel {
         it.layout = FlowLayout(FlowLayout.RIGHT, 0, 0)
 
-        val addBtn = JButton("+")
-        val editBtn = JButton("e")
-        val deleteBtn = JButton("x")
+        val addBtn = JButton(PluginIcons.addIcon)
+        val editBtn = JButton(PluginIcons.editIcon)
+        val deleteBtn = JButton(PluginIcons.deleteIcon)
 
         addBtn.addActionListener {
             val nameInput = JTextField()
