@@ -39,8 +39,9 @@ object BrowserPanel {
             it.add(browserInstance.component, BorderLayout.CENTER)
 
             browserInstance.jbCefClient.addLoadHandler(getLoadHandler(project), browserInstance.cefBrowser)
-
             browserInstance.jbCefClient.addRequestHandler(getRequestHandler(), browserInstance.cefBrowser)
+
+            browserInstance.loadURL(PersistentService.getLastPageInfo(project).address)
         } else {
             it.add(JLabel(UNSUPPORTED_MESSAGE), BorderLayout.CENTER)
         }

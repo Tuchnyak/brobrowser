@@ -1,5 +1,6 @@
 package net.tuchnyak.brobrowser.view.panel
 
+import ai.grazie.detector.ngram.main
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.VerticalFlowLayout
@@ -8,6 +9,7 @@ import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.FlowLayout
 import javax.swing.DefaultListCellRenderer
 import javax.swing.JButton
 import javax.swing.JComboBox
@@ -15,6 +17,7 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
+import javax.swing.JTable
 import javax.swing.JTextField
 
 /**
@@ -28,22 +31,6 @@ object HeaderPanel {
         mainPanel: MainPanel
     ): JPanel = initCustomPanel {
         it.layout = BorderLayout(5, 10)
-
-        val btn = JButton("+")
-        btn.addActionListener {
-            val nameInput = JTextField()
-            val addressInput = JTextField()
-            val addDialog = AddDialog(project, nameInput, addressInput)
-            val isOk = addDialog.showAndGet()
-            if (isOk) {
-                PersistentService.addOrUpdateUrl(
-                    UrlInfo(nameInput.text, addressInput.text),
-                    project
-                )
-                mainPanel.redraw()
-            }
-        }
-        it.add(btn, BorderLayout.EAST)
 
         val dropDown = JComboBox<String>(PersistentService.getNames(project).sorted().toTypedArray())
         dropDown.isEditable = false
@@ -71,14 +58,95 @@ object HeaderPanel {
             }
         }
         it.add(dropDown, BorderLayout.CENTER)
+
+        it.add(initButtonPanel(project, mainPanel, dropDown), BorderLayout.EAST)
     }
 
 }
 
-private class AddDialog(project: Project, val name: JTextField, val address: JTextField) : DialogWrapper(project) {
+private fun initButtonPanel(project: Project, mainPanel: MainPanel, dropDown: JComboBox<String>): JPanel =
+    initCustomPanel {
+        it.layout = FlowLayout(FlowLayout.RIGHT, 0, 0)
+
+        val addBtn = JButton("+")
+        val editBtn = JButton("e")
+        val deleteBtn = JButton("x")
+
+        addBtn.addActionListener {
+            val nameInput = JTextField()
+            val addressInput = JTextField()
+
+            val addDialog = AddDialog(project, nameInput, addressInput)
+            val isOk = addDialog.showAndGet()
+            if (isOk) {
+                PersistentService.addOrUpdateUrl(
+                    UrlInfo(nameInput.text, addressInput.text),
+                    project
+                )
+                PersistentService.setupLastPage(nameInput.text, project)
+                mainPanel.redraw()
+            }
+        }
+        it.add(addBtn)
+
+        editBtn.addActionListener {
+            dropDown.selectedItem?.toString()?.apply {
+                val url = PersistentService.getUrlByName(project, this)
+                val nameInput = JTextField(this)
+                val addressInput = JTextField(url)
+
+                val addDialog = AddDialog(project, nameInput, addressInput, "Edit bookmark")
+                val isOk = addDialog.showAndGet()
+                if (isOk) {
+                    PersistentService.removeUrl(this, project)
+                    PersistentService.addOrUpdateUrl(
+                        UrlInfo(nameInput.text, addressInput.text),
+                        project
+                    )
+                    PersistentService.setupLastPage(nameInput.text, project)
+                    mainPanel.redraw()
+                }
+            }
+        }
+        it.add(editBtn)
+
+        deleteBtn.addActionListener {
+            val dialog = DeleteDialog(project)
+            dropDown.selectedItem?.takeIf { dialog.showAndGet() }?.toString()?.apply {
+                PersistentService.removeUrl(this, project)
+                PersistentService.setupLastPage(PersistentService.getNames(project).first(), project)
+                mainPanel.redraw()
+            }
+        }
+        it.add(deleteBtn)
+    }
+
+private class DeleteDialog(val project: Project) : DialogWrapper(project) {
 
     init {
-        title = "Add new bookmark"
+        title = "Delete bookmark?"
+        isModal = true
+        init()
+    }
+
+    override fun createCenterPanel(): JComponent? {
+        val p = JPanel()
+        p.layout = VerticalFlowLayout(VerticalFlowLayout.CENTER)
+        p.add(JLabel("Are you sure?"))
+
+        return p
+    }
+}
+
+private class AddDialog(
+    val project: Project,
+    val name: JTextField,
+    val address: JTextField,
+    val windowTitle: String = "Add new bookmark"
+) : DialogWrapper(project) {
+
+    init {
+        title = windowTitle
         isModal = true
         init()
     }

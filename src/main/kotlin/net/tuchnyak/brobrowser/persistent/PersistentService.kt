@@ -30,8 +30,8 @@ class PersistentService : SimplePersistentStateComponent<PluginState>(PluginStat
             getPluginStateInstance(project).addOrUpdateUrl(url.title, url.address)
         }
 
-        fun removeUrl(url: UrlInfo, project: Project) {
-            getPluginStateInstance(project).removeUrl(url.title)
+        fun removeUrl(key: String, project: Project) {
+            getPluginStateInstance(project).removeUrl(key)
         }
 
         fun setupLastPage(name: String, project: Project) {
