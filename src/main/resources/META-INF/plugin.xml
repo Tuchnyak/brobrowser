@@ -20,13 +20,14 @@
 
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.0.1</b>: Minor dix</li>
         <li><b>1.0.0</b>: First release!</li>
     </ul>
   ]]></change-notes>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="net.tuchnyak.brobrowser.view.BrowserManagerWindowFactory"
-                    id="Bro"
+                    id="BroBrowser"
                     anchor="right"
                     icon="net.tuchnyak.brobrowser.icons.PluginIcons.toolWindow"/>
     </extensions>
