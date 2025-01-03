@@ -16,6 +16,12 @@ object PluginIcons {
     val toolWindow = getIconByBrightness("toolWindowIcon")
 
     @JvmField
+    val backButton = getIconByBrightnessWithResize("btn_browser_back", WIDTH, HEIGHT)
+
+    @JvmField
+    val forwardButton = getIconByBrightnessWithResize("btn_browser_forward", WIDTH, HEIGHT)
+
+    @JvmField
     val addIcon = getIconByBrightnessWithResize("btn_add", WIDTH, HEIGHT)
 
     @JvmField

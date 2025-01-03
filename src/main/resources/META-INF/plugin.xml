@@ -20,7 +20,8 @@
 
     <change-notes><![CDATA[
     <ul>
-        <li><b>1.0.1</b>: Minor dix</li>
+        <li><b>1.0.2</b>: Back-Forward browser navigation</li>
+        <li><b>1.0.1</b>: Minor fix</li>
         <li><b>1.0.0</b>: First release!</li>
     </ul>
   ]]></change-notes>

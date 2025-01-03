@@ -9,7 +9,6 @@ import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
 import java.awt.BorderLayout
 import java.awt.Component
-import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.DefaultListCellRenderer
 import javax.swing.JButton
@@ -31,6 +30,8 @@ object HeaderPanel {
         mainPanel: MainPanel
     ): JPanel = initCustomPanel {
         it.layout = BorderLayout(5, 10)
+
+        it.add(initBrowserHistoryPanel(browserInstance), BorderLayout.WEST)
 
         val dropDown = JComboBox<String>(PersistentService.getNames(project).sorted().toTypedArray())
         dropDown.isEditable = false
@@ -64,21 +65,72 @@ object HeaderPanel {
 
 }
 
-private fun initButtonPanel(project: Project, mainPanel: MainPanel, dropDown: JComboBox<String>): JPanel =
-    initCustomPanel {
-        it.layout = FlowLayout(FlowLayout.RIGHT, 0, 0)
+private fun initBrowserHistoryPanel(browserInstance: JBCefBrowser): JPanel = initCustomPanel {
+    it.layout = FlowLayout(FlowLayout.LEFT, 0, 0)
+    it.add(getBackButton(browserInstance))
+    it.add(getForwardButton(browserInstance))
+}
 
-        val addBtn = JButton(PluginIcons.addIcon)
-        val editBtn = JButton(PluginIcons.editIcon)
-        val deleteBtn = JButton(PluginIcons.deleteIcon)
+private fun getForwardButton(browserInstance: JBCefBrowser): Component {
+    val btnForward = JButton(PluginIcons.forwardButton)
+    btnForward.addActionListener {
+        if (browserInstance.cefBrowser.canGoForward()) {
+            browserInstance.cefBrowser.goForward()
+        }
+    }
 
-        addBtn.addActionListener {
-            val nameInput = JTextField()
-            val addressInput = JTextField()
+    return btnForward
+}
 
-            val addDialog = AddDialog(project, nameInput, addressInput)
+private fun getBackButton(browserInstance: JBCefBrowser): Component {
+    val btnBack = JButton(PluginIcons.backButton)
+    btnBack.addActionListener {
+        if (browserInstance.cefBrowser.canGoBack()) {
+            browserInstance.cefBrowser.goBack()
+        }
+    }
+
+    return btnBack
+}
+
+private fun initButtonPanel(
+    project: Project,
+    mainPanel: MainPanel,
+    dropDown: JComboBox<String>
+): JPanel = initCustomPanel {
+    it.layout = FlowLayout(FlowLayout.RIGHT, 0, 0)
+
+    val addBtn = JButton(PluginIcons.addIcon)
+    val editBtn = JButton(PluginIcons.editIcon)
+    val deleteBtn = JButton(PluginIcons.deleteIcon)
+
+    addBtn.addActionListener {
+        val nameInput = JTextField()
+        val addressInput = JTextField()
+
+        val addDialog = AddDialog(project, nameInput, addressInput)
+        val isOk = addDialog.showAndGet()
+        if (isOk) {
+            PersistentService.addOrUpdateUrl(
+                UrlInfo(nameInput.text, addressInput.text),
+                project
+            )
+            PersistentService.setupLastPage(nameInput.text, project)
+            mainPanel.redraw()
+        }
+    }
+    it.add(addBtn)
+
+    editBtn.addActionListener {
+        dropDown.selectedItem?.toString()?.apply {
+            val url = PersistentService.getUrlByName(project, this)
+            val nameInput = JTextField(this)
+            val addressInput = JTextField(url)
+
+            val addDialog = AddDialog(project, nameInput, addressInput, "Edit bookmark")
             val isOk = addDialog.showAndGet()
             if (isOk) {
+                PersistentService.removeUrl(this, project)
                 PersistentService.addOrUpdateUrl(
                     UrlInfo(nameInput.text, addressInput.text),
                     project
@@ -87,39 +139,19 @@ private fun initButtonPanel(project: Project, mainPanel: MainPanel, dropDown: JC
                 mainPanel.redraw()
             }
         }
-        it.add(addBtn)
-
-        editBtn.addActionListener {
-            dropDown.selectedItem?.toString()?.apply {
-                val url = PersistentService.getUrlByName(project, this)
-                val nameInput = JTextField(this)
-                val addressInput = JTextField(url)
-
-                val addDialog = AddDialog(project, nameInput, addressInput, "Edit bookmark")
-                val isOk = addDialog.showAndGet()
-                if (isOk) {
-                    PersistentService.removeUrl(this, project)
-                    PersistentService.addOrUpdateUrl(
-                        UrlInfo(nameInput.text, addressInput.text),
-                        project
-                    )
-                    PersistentService.setupLastPage(nameInput.text, project)
-                    mainPanel.redraw()
-                }
-            }
-        }
-        it.add(editBtn)
-
-        deleteBtn.addActionListener {
-            val dialog = DeleteDialog(project)
-            dropDown.selectedItem?.takeIf { dialog.showAndGet() }?.toString()?.apply {
-                PersistentService.removeUrl(this, project)
-                PersistentService.setupLastPage(PersistentService.getNames(project).first(), project)
-                mainPanel.redraw()
-            }
-        }
-        it.add(deleteBtn)
     }
+    it.add(editBtn)
+
+    deleteBtn.addActionListener {
+        val dialog = DeleteDialog(project)
+        dropDown.selectedItem?.takeIf { dialog.showAndGet() }?.toString()?.apply {
+            PersistentService.removeUrl(this, project)
+            PersistentService.setupLastPage(PersistentService.getNames(project).first(), project)
+            mainPanel.redraw()
+        }
+    }
+    it.add(deleteBtn)
+}
 
 private class DeleteDialog(val project: Project) : DialogWrapper(project) {
 
