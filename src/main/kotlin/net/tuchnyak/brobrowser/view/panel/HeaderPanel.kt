@@ -4,13 +4,17 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.ui.jcef.JBCefBrowser
+import com.intellij.ui.util.preferredWidth
 import net.tuchnyak.brobrowser.icons.PluginIcons
 import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.FlowLayout
+import java.awt.Toolkit
 import javax.swing.DefaultListCellRenderer
+import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JComponent
@@ -72,7 +76,7 @@ private fun initBrowserHistoryPanel(browserInstance: JBCefBrowser): JPanel = ini
 }
 
 private fun getForwardButton(browserInstance: JBCefBrowser): Component {
-    val btnForward = JButton(PluginIcons.forwardButton)
+    val btnForward = JButtonSizedWithIcon(PluginIcons.forwardButton)
     btnForward.addActionListener {
         if (browserInstance.cefBrowser.canGoForward()) {
             browserInstance.cefBrowser.goForward()
@@ -83,7 +87,7 @@ private fun getForwardButton(browserInstance: JBCefBrowser): Component {
 }
 
 private fun getBackButton(browserInstance: JBCefBrowser): Component {
-    val btnBack = JButton(PluginIcons.backButton)
+    val btnBack = JButtonSizedWithIcon(PluginIcons.backButton)
     btnBack.addActionListener {
         if (browserInstance.cefBrowser.canGoBack()) {
             browserInstance.cefBrowser.goBack()
@@ -100,9 +104,9 @@ private fun initButtonPanel(
 ): JPanel = initCustomPanel {
     it.layout = FlowLayout(FlowLayout.RIGHT, 0, 0)
 
-    val addBtn = JButton(PluginIcons.addIcon)
-    val editBtn = JButton(PluginIcons.editIcon)
-    val deleteBtn = JButton(PluginIcons.deleteIcon)
+    val addBtn = JButtonSizedWithIcon(PluginIcons.addIcon)
+    val editBtn = JButtonSizedWithIcon(PluginIcons.editIcon)
+    val deleteBtn = JButtonSizedWithIcon(PluginIcons.deleteIcon)
 
     addBtn.addActionListener {
         val nameInput = JTextField()
@@ -192,6 +196,27 @@ private class AddDialog(
         p.add(address)
 
         return p
+    }
+
+}
+
+private class JButtonSizedWithIcon(icon: Icon) : JButton(icon) {
+
+    init {
+        val screenResolution = Toolkit.getDefaultToolkit().screenResolution.toDouble()
+        val scaleFactor = screenResolution / 96.0 // 96 DPI — базовый уровень
+
+        val iconWidth = icon.iconWidth
+        val iconHeight = icon.iconHeight
+
+        val basePadding = 20
+        val padding = (basePadding * scaleFactor).toInt()
+        val buttonWidth = iconWidth + padding
+        val buttonHeight = iconHeight + padding
+
+        preferredSize = Dimension(buttonWidth, buttonHeight)
+        minimumSize = preferredSize
+        maximumSize = preferredSize
     }
 
 }
