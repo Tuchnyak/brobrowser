@@ -3,8 +3,7 @@ package net.tuchnyak.brobrowser.view.panel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.ui.jcef.JBCefBrowser
-import com.intellij.ui.util.preferredWidth
+import net.tuchnyak.brobrowser.browser.BrowserService
 import net.tuchnyak.brobrowser.icons.PluginIcons
 import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
@@ -30,12 +29,12 @@ object HeaderPanel {
 
     fun getHeader(
         project: Project,
-        browserInstance: JBCefBrowser,
+        browserService: BrowserService,
         mainPanel: MainPanel
     ): JPanel = initCustomPanel {
         it.layout = BorderLayout(5, 10)
 
-        it.add(initBrowserHistoryPanel(browserInstance), BorderLayout.WEST)
+        it.add(initBrowserHistoryPanel(browserService), BorderLayout.WEST)
 
         val dropDown = JComboBox<String>(PersistentService.getNames(project).sorted().toTypedArray())
         dropDown.isEditable = false
@@ -44,7 +43,7 @@ object HeaderPanel {
             val selected = dropDown.selectedItem?.toString()
             if (selected != null) {
                 PersistentService.setupLastPage(selected, project)
-                browserInstance.loadURL(PersistentService.getLastPageInfo(project).address)
+                browserService.loadURL(PersistentService.getLastPageInfo(project).address)
             }
         }
         dropDown.renderer = object : DefaultListCellRenderer() {
@@ -69,28 +68,28 @@ object HeaderPanel {
 
 }
 
-private fun initBrowserHistoryPanel(browserInstance: JBCefBrowser): JPanel = initCustomPanel {
+private fun initBrowserHistoryPanel(browserService: BrowserService): JPanel = initCustomPanel {
     it.layout = FlowLayout(FlowLayout.LEFT, 0, 0)
-    it.add(getBackButton(browserInstance))
-    it.add(getForwardButton(browserInstance))
+    it.add(getBackButton(browserService))
+    it.add(getForwardButton(browserService))
 }
 
-private fun getForwardButton(browserInstance: JBCefBrowser): Component {
+private fun getForwardButton(browserService: BrowserService): Component {
     val btnForward = JButtonSizedWithIcon(PluginIcons.forwardButton)
     btnForward.addActionListener {
-        if (browserInstance.cefBrowser.canGoForward()) {
-            browserInstance.cefBrowser.goForward()
+        if (browserService.canGoForward()) {
+            browserService.goForward()
         }
     }
 
     return btnForward
 }
 
-private fun getBackButton(browserInstance: JBCefBrowser): Component {
+private fun getBackButton(browserService: BrowserService): Component {
     val btnBack = JButtonSizedWithIcon(PluginIcons.backButton)
     btnBack.addActionListener {
-        if (browserInstance.cefBrowser.canGoBack()) {
-            browserInstance.cefBrowser.goBack()
+        if (browserService.canGoBack()) {
+            browserService.goBack()
         }
     }
 

@@ -30,6 +30,9 @@ object PluginIcons {
     @JvmField
     val deleteIcon = getIconByBrightnessWithResize("btn_delete", WIDTH, HEIGHT)
 
+    @JvmField
+    val errorIcon = getIconByPath("/icons/icon_error.svg")
+
     private fun getIconByBrightnessWithResize(name: String, width: Int, height: Int): Icon {
         val originalSizedIcon = getIconByBrightness(name)
         val origImage = IconUtil.toBufferedImage(originalSizedIcon)
@@ -40,10 +43,14 @@ object PluginIcons {
 
     private fun getIconByBrightness(name: String): Icon {
        return if (JBColor.isBright()) {
-           IconLoader.getIcon("/icons/$name.svg", javaClass)
+           getIconByPath("/icons/$name.svg")
        } else {
-           IconLoader.getIcon("/icons/${name}_dark.svg", javaClass)
+           getIconByPath("/icons/${name}_dark.svg")
        }
+    }
+
+    private fun getIconByPath(path: String): Icon {
+        return IconLoader.getIcon(path, javaClass)
     }
 
 }

@@ -5,11 +5,7 @@ plugins {
 }
 
 group = "net.tuchnyak"
-version = "1.0.2"
-
-repositories {
-    mavenCentral()
-}
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -18,14 +14,20 @@ repositories {
     }
 }
 
+dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3")
+        instrumentationTools()
+    }
+}
+
 tasks {
-    // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "21"
+        kotlinOptions.jvmTarget = "17"
     }
 
     patchPluginXml {
@@ -44,9 +46,3 @@ tasks {
     }
 }
 
-dependencies {
-    intellijPlatform {
-        intellijIdeaCommunity("2024.3")
-        instrumentationTools()
-    }
-}

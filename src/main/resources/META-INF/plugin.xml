@@ -16,10 +16,12 @@
         <dd>- Edit or remove bookmarks</dd>
     </dl>
     <p>Each bookmarks set saved locally for particular project.</p>
+    <br><p><i>Note: Android Studio unsupported!</i></p>
   ]]></description>
 
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.0.3</b>: Added error panel for unsupported IDEs</li>
         <li><b>1.0.2</b>: Back-Forward browser navigation</li>
         <li><b>1.0.1</b>: Minor fix</li>
         <li><b>1.0.0</b>: First release!</li>
