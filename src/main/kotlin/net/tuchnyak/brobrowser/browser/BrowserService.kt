@@ -29,24 +29,23 @@ interface BrowserService {
     fun goBack()
 
     fun getComponent(): JComponent
-
-    fun initLoadHandler(project: Project)
 }
 
-fun getBrowserService(): BrowserService {
+fun getBrowserService(project: Project): BrowserService {
     try {
-        return getJbCefBrowserServiceImpl()
+        return getJbCefBrowserServiceImpl(project)
     } catch(e: Exception) {
         throw IllegalStateException("Not a JetBrainsProduct!: ${e.message}")
     }
 }
 
-private fun getJbCefBrowserServiceImpl(): BrowserService = object : BrowserService {
+private fun getJbCefBrowserServiceImpl(project: Project): BrowserService = object : BrowserService {
 
     val jbCefBrowserInstance: JBCefBrowser = JBCefBrowser()
 
     init {
         jbCefBrowserInstance.jbCefClient.addRequestHandler(getRequestHandler(), jbCefBrowserInstance.cefBrowser)
+        jbCefBrowserInstance.jbCefClient.addLoadHandler(getLoadHandler(project), jbCefBrowserInstance.cefBrowser)
     }
 
     override fun loadURL(address: String) {
@@ -71,10 +70,6 @@ private fun getJbCefBrowserServiceImpl(): BrowserService = object : BrowserServi
 
     override fun getComponent(): JComponent {
         return jbCefBrowserInstance.component
-    }
-
-    override fun initLoadHandler(project: Project) {
-        jbCefBrowserInstance.jbCefClient.addLoadHandler(getLoadHandler(project), jbCefBrowserInstance.cefBrowser)
     }
 
     private fun getLoadHandler(project: Project): CefLoadHandler {

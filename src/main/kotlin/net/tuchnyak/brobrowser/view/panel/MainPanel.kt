@@ -20,7 +20,7 @@ fun MainPanel.init(): JPanel {
     this.layout = BorderLayout()
 
     try {
-        this.browserService = getBrowserService()
+        this.browserService = getBrowserService(project)
 
         val headerPanel = HeaderPanel.getHeader(project, browserService, this)
         this.add(headerPanel, BorderLayout.NORTH)
