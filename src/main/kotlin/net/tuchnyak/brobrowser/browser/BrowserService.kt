@@ -2,7 +2,6 @@ package net.tuchnyak.brobrowser.browser
 
 import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefBrowser
-import com.intellij.util.PlatformUtils
 import net.tuchnyak.brobrowser.persistent.PersistentService
 import net.tuchnyak.brobrowser.persistent.UrlInfo
 import org.cef.browser.CefBrowser
@@ -35,10 +34,11 @@ interface BrowserService {
 }
 
 fun getBrowserService(): BrowserService {
-    return if (PlatformUtils.isJetBrainsProduct())
-        getJbCefBrowserServiceImpl()
-    else
-        throw IllegalStateException("Not a JetBrainsProduct!")
+    try {
+        return getJbCefBrowserServiceImpl()
+    } catch(e: Exception) {
+        throw IllegalStateException("Not a JetBrainsProduct!: ${e.message}")
+    }
 }
 
 private fun getJbCefBrowserServiceImpl(): BrowserService = object : BrowserService {

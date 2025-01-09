@@ -29,8 +29,8 @@ fun MainPanel.init(): JPanel {
         this.add(browserPanel, BorderLayout.CENTER)
     } catch (e: Exception) {
         this.add(initCustomPanel {
-            it.layout = VerticalFlowLayout(VerticalFlowLayout.CENTER, 10, 30, true, false)
-            val label = JLabel("Sorry, your IDE doesn't support BroBrowser: '${e.message}'")
+            it.layout = VerticalFlowLayout(VerticalFlowLayout.CENTER, 20, 30, true, false)
+            val label = JLabel("<html>Sorry, your IDE doesn't support BroBrowser: '${e.message}'</html>")
             label.horizontalAlignment = JLabel.CENTER
             it.add(label)
             it.add(JLabel(PluginIcons.errorIcon))
