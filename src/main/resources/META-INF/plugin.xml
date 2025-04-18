@@ -21,6 +21,7 @@
 
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.0.5</b>: JetBrains build version update</li>
         <li><b>1.0.4</b>: Fix URL update for a bookmark</li>
         <li><b>1.0.3</b>: Added error panel for unsupported IDEs</li>
         <li><b>1.0.2</b>: Back-Forward browser navigation</li>
